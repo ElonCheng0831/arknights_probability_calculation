@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>明日方舟六星出货概率计算器</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100vh;
+    padding: 16px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #58a6ff;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 12px;
+    color: #8b949e;
+    margin-bottom: 20px;
+  }
+  .input-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .input-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .input-group { flex: 1; min-width: 140px; }
+  .input-group label {
+    display: block;
+    font-size: 13px;
+    color: #8b949e;
+    margin-bottom: 6px;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 10px 12px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-group input:focus { border-color: #58a6ff; }
+  .calc-btn {
+    padding: 10px 28px;
+    background: #238636;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    min-width: 100px;
+  }
+  .calc-btn:hover { background: #2ea043; }
+  .calc-btn:active { background: #238636; }
+  .prob-display {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .prob-box {
+    flex: 1;
+    min-width: 160px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .prob-box .label {
+    font-size: 12px;
+    color: #8b949e;
+    margin-bottom: 4px;
+  }
+  .prob-box .value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #58a6ff;
+  }
+  .prob-box .value.warn { color: #f0883e; }
+  .prob-box .value.good { color: #3fb950; }
+  .charts {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .chart-card {
+    flex: 1;
+    min-width: 300px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .chart-card h3 {
+    font-size: 14px;
+    color: #c9d1d9;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .chart-card canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .empty-hint {
+    text-align: center;
+    color: #484f58;
+    font-size: 14px;
+    padding: 40px 0;
+  }
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #484f58;
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+  @media (max-width: 640px) {
+    h1 { font-size: 18px; }
+    .input-row { flex-direction: column; }
+    .calc-btn { width: 100%; }
+    .prob-box .value { font-size: 20px; }
+    .chart-card { min-width: 100%; }
+  }
+  /* 弹窗按钮 */
+  .popup-btn {
+    display: block;
+    margin: 16px auto 0;
+    padding: 10px 28px;
+    background: #1f6feb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .popup-btn:hover { background: #388bfd; }
+
+  /* 弹窗遮罩 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.75);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-overlay.active { display: flex; }
+
+  /* 弹窗内容 */
+  .modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+  }
+  .modal-content img {
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: 8px;
+    display: block;
+  }
+  .modal-close {
+    position: absolute;
+    top: -14px; right: -14px;
+    width: 36px; height: 36px;
+    background: #f85149;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal-close:hover { background: #da3633; }
+
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>明日方舟六星出货概率计算器</h1>
+  <p class="subtitle">基础概率2% · 50抽后每抽+2%保底 · 支持多次六星概率计算</p>
+
+  <div class="input-card">
+    <div class="input-row">
+      <div class="input-group">
+        <label for="inputX">已抽抽数（距离上次出六星）</label>
+        <input type="number" id="inputX" min="0" value="0" placeholder="0~99">
+      </div>
+      <div class="input-group">
+        <label for="inputY">剩余抽数</label>
+        <input type="number" id="inputY" min="1" value="50" placeholder="≥1">
+      </div>
+      <button class="calc-btn" onclick="calculate()">计算</button>
+    </div>
+  </div>
+
+  <div class="prob-display" id="probDisplay" style="display:none;">
+    <div class="prob-box">
+      <div class="label">总抽数</div>
+      <div class="value" id="totalPulls">--</div>
+    </div>
+    <div class="prob-box">
+      <div class="label">这段抽卡出六星总概率</div>
+      <div class="value" id="totalProb">--</div>
+    </div>
+    <div class="prob-box" id="remainBox" style="display:none;">
+      <div class="label">剩余抽数条件概率</div>
+      <div class="value warn" id="remainProb">--</div>
+    </div>
+  </div>
+
+  <div class="charts" id="chartsArea">
+    <div class="empty-hint">输入抽数后点击「计算」查看概率分布图</div>
+  </div>
+
+  <div class="footer">
+    概率基于数学模型精确计算（卷积法），非随机仿真<br>
+    总抽数≤99时显示首个六星出货分布，总抽数&gt;99时显示六星个数饼图
+  </div>
+  <!-- 弹窗按钮 -->
+  <button class="popup-btn" onclick="openModal()">给站主捐点钱</button>
+
+  <!-- 弹窗 -->
+  <div class="modal-overlay" id="imageModal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <img src="网站用文件.jpg" alt="谢谢喵~">
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ========== 概率计算核心逻辑 ==========
+
+function arknightsCdf(N) {
+  let survive = 1.0;
+  for (let m = 1; m <= N; m++) {
+    let p = m <= 50 ? 0.02 : 0.02 + 0.02 * (m - 50);
+    survive *= (1.0 - p);
+  }
+  return 1.0 - survive;
+}
+
+function getOnePmf() {
+  let pmf = new Array(99).fill(0);
+  let sPrev = 1.0;
+  for (let m = 1; m <= 99; m++) {
+    let p = m <= 50 ? 0.02 : 0.02 + 0.02 * (m - 50);
+    let sCurr = sPrev * (1 - p);
+    pmf[m - 1] = sPrev * p;
+    sPrev = sCurr;
+  }
+  return pmf;
+}
+
+function discreteConvolve(a, b) {
+  let res = new Array(a.length + b.length - 1).fill(0);
+  for (let i = 0; i < a.length; i++) {
+    if (Math.abs(a[i]) < 1e-12) continue;
+    for (let j = 0; j < b.length; j++) {
+      res[i + j] += a[i] * b[j];
+    }
+  }
+  return res;
+}
+
+function pmfKStars(basePmf, k) {
+  if (k === 1) return basePmf.slice();
+  let conv = basePmf.slice();
+  for (let i = 2; i <= k; i++) {
+    conv = discreteConvolve(conv, basePmf);
+  }
+  return conv;
+}
+
+function calcKProb(basePmf, nTotal, maxK) {
+  maxK = maxK || 8;
+  let probDict = {};
+  probDict[0] = 1.0;
+  for (let k = 1; k <= maxK; k++) {
+    let pkDist = pmfKStars(basePmf, k);
+    let sumP = 0;
+    for (let idx = 0; idx < pkDist.length; idx++) {
+      if (idx + 1 <= nTotal) sumP += pkDist[idx];
+      else break;
+    }
+    probDict[k] = sumP;
+  }
+  return probDict;
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// ========== Canvas 绘图 ==========
+
+function setupCanvas(canvas, w, h) {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return ctx;
+}
+
+// 左边：首个六星出货分布柱状图
+function drawFirstStarChart(canvas, targetPull) {
+  const W = 520, H = 380;
+  const ctx = setupCanvas(canvas, W, H);
+  ctx.clearRect(0, 0, W, H);
+
+  const padL = 50, padR = 20, padT = 30, padB = 50;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  // 坐标轴
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT);
+  ctx.lineTo(padL, padT + chartH);
+  ctx.lineTo(padL + chartW, padT + chartH);
+  ctx.stroke();
+
+  // X轴刻度
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  for (let tick = 0; tick <= 100; tick += 20) {
+    let x = padL + (tick / 100) * chartW;
+    ctx.fillText(tick, x, padT + chartH + 18);
+    ctx.strokeStyle = '#21262d';
+    ctx.beginPath();
+    ctx.moveTo(x, padT);
+    ctx.lineTo(x, padT + chartH);
+    ctx.stroke();
+  }
+  ctx.fillText('首个六星出货抽数', padL + chartW / 2, padT + chartH + 38);
+
+  // Y轴标签
+  ctx.save();
+  ctx.translate(14, padT + chartH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('相对概率', 0, 0);
+  ctx.restore();
+
+  // 参考线
+  function drawRefLine(pull, color, label) {
+    let x = padL + (pull / 100) * chartW;
+    ctx.strokeStyle = color;
+    ctx.setLineDash([4, 3]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x, padT);
+    ctx.lineTo(x, padT + chartH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  drawRefLine(34.59, '#f85149', '期望');
+  drawRefLine(35, '#3fb950', '中位');
+  drawRefLine(50, '#a371f7', '保底');
+
+  // 柱子
+  const barW = chartW / 100 * 0.7;
+  for (let pull = 1; pull <= 100; pull++) {
+    let h;
+    if (pull <= 50) {
+      h = Math.pow(0.962, pull - 1) * chartH * 0.85;
+    } else {
+      let peak = 56;
+      if (pull <= peak) h = (20 + (pull - 50) * 32) / 340 * chartH * 0.85;
+      else h = 340 * Math.pow(0.76, pull - peak) / 340 * chartH * 0.85;
+    }
+    h = Math.max(1, h);
+    let x = padL + ((pull - 0.5) / 100) * chartW - barW / 2;
+    let y = padT + chartH - h;
+    let isHL = (pull === targetPull);
+    ctx.fillStyle = isHL ? '#f0e130' : (pull <= 50 ? '#388bfd' : '#f0883e');
+    ctx.fillRect(x, y, barW, h);
+  }
+
+  // 标题
+  ctx.fillStyle = '#c9d1d9';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('首个六星出货抽数分布', W / 2, 18);
+}
+
+// 右边：六星个数概率柱状图
+function drawStarCountChart(canvas, probDict, maxK) {
+  maxK = maxK || 8;
+  const W = 520, H = 380;
+  const ctx = setupCanvas(canvas, W, H);
+  ctx.clearRect(0, 0, W, H);
+
+  const padL = 50, padR = 20, padT = 30, padB = 50;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  // 计算恰好k个概率
+  let exact = [];
+  for (let k = 0; k <= maxK; k++) {
+    if (k < maxK) exact.push(Math.max(0, probDict[k] - probDict[k + 1]));
+    else exact.push(Math.max(0, probDict[k]));
+  }
+
+  // 坐标轴
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT);
+  ctx.lineTo(padL, padT + chartH);
+  ctx.lineTo(padL + chartW, padT + chartH);
+  ctx.stroke();
+
+  // Y轴刻度
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'right';
+  let maxP = Math.max(...exact, 0.01);
+  for (let i = 0; i <= 4; i++) {
+    let pct = (maxP * 100 * i / 4).toFixed(1);
+    let y = padT + chartH - (i / 4) * chartH;
+    ctx.fillText(pct + '%', padL - 6, y + 4);
+    ctx.strokeStyle = '#21262d';
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(padL + chartW, y);
+    ctx.stroke();
+  }
+
+  // 柱子
+  let n = exact.length;
+  let gap = 8;
+  let barW = (chartW - gap * (n - 1)) / n;
+  let colors = ['#f85149','#388bfd','#3fb950','#f0883e','#a371f7','#1f9eb0','#db6d28','#30363d','#6e7681'];
+  ctx.textAlign = 'center';
+  for (let k = 0; k < n; k++) {
+    let h = (exact[k] / maxP) * chartH;
+    h = Math.max(0, h);
+    let x = padL + k * (barW + gap);
+    let y = padT + chartH - h;
+    ctx.fillStyle = colors[k % colors.length];
+    ctx.fillRect(x, y, barW, h);
+    // X标签
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '11px sans-serif';
+    let label = k < maxK ? k : (maxK + '+');
+    ctx.fillText(label, x + barW / 2, padT + chartH + 18);
+    // 柱子上方百分比
+    if (exact[k] > maxP * 0.04) {
+      ctx.fillStyle = '#c9d1d9';
+      ctx.font = '10px sans-serif';
+      ctx.fillText((exact[k] * 100).toFixed(1) + '%', x + barW / 2, y - 5);
+    }
+  }
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '11px sans-serif';
+  ctx.fillText('六星个数', padL + chartW / 2, padT + chartH + 38);
+
+  // Y轴标签
+  ctx.save();
+  ctx.translate(14, padT + chartH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillStyle = '#8b949e';
+  ctx.fillText('概率(%)', 0, 0);
+  ctx.restore();
+
+  // 标题
+  ctx.fillStyle = '#c9d1d9';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('六星个数概率分布', W / 2, 18);
+}
+
+// 饼图
+function drawPieChart(canvas, probDict, maxK) {
+  maxK = maxK || 8;
+  const W = 520, H = 380;
+  const ctx = setupCanvas(canvas, W, H);
+  ctx.clearRect(0, 0, W, H);
+
+  // 计算恰好k个概率
+  let exact = [];
+  for (let k = 0; k <= maxK; k++) {
+    if (k < maxK) exact.push(Math.max(0, probDict[k] - probDict[k + 1]));
+    else exact.push(Math.max(0, probDict[k]));
+  }
+
+  let colors = ['#f85149','#388bfd','#3fb950','#f0883e','#a371f7','#1f9eb0','#db6d28','#30363d','#6e7681'];
+  let cx = 170, cy = H / 2 + 10, r = 120;
+
+  // 画扇形
+  let startAngle = -Math.PI / 2;
+  for (let k = 0; k <= maxK; k++) {
+    if (exact[k] < 0.001) continue;
+    let extent = exact[k] * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + extent);
+    ctx.closePath();
+    ctx.fillStyle = colors[k % colors.length];
+    ctx.fill();
+    ctx.strokeStyle = '#0d1117';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // 扇形内标注
+    if (exact[k] > 0.03) {
+      let mid = startAngle + extent / 2;
+      let tx = cx + Math.cos(mid) * r * 0.62;
+      let ty = cy + Math.sin(mid) * r * 0.62;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((exact[k] * 100).toFixed(1) + '%', tx, ty + 4);
+    }
+    startAngle += extent;
+  }
+
+  // 图例
+  let legendX = 330, legendY = 50;
+  ctx.font = '12px sans-serif';
+  ctx.textAlign = 'left';
+  for (let k = 0; k <= maxK; k++) {
+    let ly = legendY + k * 22;
+    // 颜色方块
+    ctx.fillStyle = colors[k % colors.length];
+    ctx.fillRect(legendX, ly, 14, 14);
+    // 文字
+    ctx.fillStyle = '#c9d1d9';
+    let label = k < maxK ? (k + '个六星') : (maxK + '个及以上');
+    ctx.fillText(label + ': ' + (exact[k] * 100).toFixed(2) + '%', legendX + 20, ly + 11);
+  }
+
+  // 标题
+  ctx.fillStyle = '#c9d1d9';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('六星个数概率分布（饼图）', W / 2, 18);
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '11px sans-serif';
+  ctx.fillText('0~7为恰好个数，8为8个及以上', W / 2, 34);
+}
+
+// ========== 主计算逻辑 ==========
+
+let basePmf = null;
+
+function calculate() {
+  let xVal = parseInt(document.getElementById('inputX').value);
+  let yVal = parseInt(document.getElementById('inputY').value);
+
+  if (isNaN(xVal) || isNaN(yVal) || xVal < 0 || yVal < 1) {
+    alert('请输入有效的抽数（已抽数≥0，剩余抽数≥1）');
+    return;
+  }
+
+  let z = xVal + yVal;
+  let gailv = 0, gailvl = 0;
+
+  // 计算单段概率
+  if (xVal === 0) {
+    let d;
+    if (yVal > 50) {
+      let b = 1, c = 0.98;
+      for (let i = 1; i <= yVal - 50; i++) {
+        c = Math.max(c - 0.02, 0);
+        b *= c;
+      }
+      d = Math.pow(0.98, 50) * b;
+    } else if (yVal < 50) {
+      d = Math.pow(0.98, yVal);
+    } else {
+      d = Math.pow(0.98, 50);
+    }
+    gailv = clamp((1 - d) * 100, 0, 100);
+  } else {
+    // 总概率 d（前z抽全不出）
+    let d;
+    if (z > 50) {
+      let b1 = 1, c1 = 0.98;
+      for (let i = 1; i <= z - 50; i++) {
+        c1 = Math.max(c1 - 0.02, 0);
+        b1 *= c1;
+      }
+      d = Math.pow(0.98, 50) * b1;
+    } else if (z < 50) {
+      d = Math.pow(0.98, z);
+    } else {
+      d = Math.pow(0.98, 50);
+    }
+    // f（前x抽全不出）
+    let f;
+    if (xVal > 50) {
+      let b2 = 1, c2 = 0.98;
+      for (let i = 1; i <= xVal - 50; i++) {
+        c2 = Math.max(c2 - 0.02, 0);
+        b2 *= c2;
+      }
+      f = Math.pow(0.98, 50) * b2;
+    } else if (xVal < 50) {
+      f = Math.pow(0.98, xVal);
+    } else {
+      f = Math.pow(0.98, 50);
+    }
+    gailv = clamp((1 - d) * 100, 0, 100);
+    gailvl = f > 0 ? clamp((f - d) / f * 100, 0, 100) : 0;
+  }
+
+  // 卷积计算多次六星概率
+  if (!basePmf) basePmf = getOnePmf();
+  let multiProb = calcKProb(basePmf, z, 8);
+
+  // 显示概率
+  document.getElementById('probDisplay').style.display = 'flex';
+  document.getElementById('totalPulls').textContent = z + ' 抽';
+  let tpEl = document.getElementById('totalProb');
+  tpEl.textContent = gailv.toFixed(3) + '%';
+  tpEl.className = 'value ' + (gailv >= 99 ? 'good' : (gailv >= 50 ? '' : 'warn'));
+
+  if (xVal > 0) {
+    document.getElementById('remainBox').style.display = 'block';
+    document.getElementById('remainProb').textContent = gailvl.toFixed(3) + '%';
+  } else {
+    document.getElementById('remainBox').style.display = 'none';
+  }
+
+  // 渲染图表
+  let chartsArea = document.getElementById('chartsArea');
+  chartsArea.innerHTML = '';
+
+  // 左边图表
+  let leftCard = document.createElement('div');
+  leftCard.className = 'chart-card';
+  let leftCanvas = document.createElement('canvas');
+  leftCard.appendChild(leftCanvas);
+  chartsArea.appendChild(leftCard);
+
+  if (z <= 99) {
+    drawFirstStarChart(leftCanvas, xVal === 0 ? yVal : z);
+  } else {
+    drawPieChart(leftCanvas, multiProb, 8);
+  }
+
+  // 右边图表
+  let rightCard = document.createElement('div');
+  rightCard.className = 'chart-card';
+  let rightCanvas = document.createElement('canvas');
+  rightCard.appendChild(rightCanvas);
+  chartsArea.appendChild(rightCard);
+  drawStarCountChart(rightCanvas, multiProb, 8);
+}
+
+// 回车触发计算
+document.getElementById('inputY').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') calculate();
+});
+document.getElementById('inputX').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') calculate();
+});
+// 弹窗控制
+function openModal() {
+  document.getElementById('imageModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(e) {
+  // 如果是点击遮罩层才关闭，点击图片内容不关闭
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('imageModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+// 按ESC键关闭弹窗
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+</script>
+</body>
+</html>
