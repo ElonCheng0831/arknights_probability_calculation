@@ -60,6 +60,42 @@
     transition: border-color 0.2s;
   }
   .input-group input:focus { border-color: #58a6ff; }
+   /* 滑块样式 */
+  .input-group input[type="range"] {
+    width: 100%;
+    margin-top: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #30363d;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+  .input-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #58a6ff;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .input-group input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #58a6ff;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+  .slider-value {
+    font-size: 11px;
+    color: #58a6ff;
+    text-align: right;
+    margin-top: 2px;
+  }
+
   .calc-btn {
     padding: 10px 28px;
     background: #238636;
@@ -199,6 +235,57 @@
     line-height: 1;
   }
   .modal-close:hover { background: #da3633; }
+   /* 右下角联系方式悬浮卡 */
+  .contact-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 500;
+  }
+  .contact-toggle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #238636;
+    color: #fff;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    line-height: 1.2;
+  }
+  .contact-toggle:hover { background: #2ea043; }
+  .contact-panel {
+    display: none;
+    position: absolute;
+    bottom: 62px;
+    right: 0;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 16px;
+    min-width: 200px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .contact-panel.active { display: block; }
+  .contact-panel h4 {
+    font-size: 13px;
+    color: #58a6ff;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .contact-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid #21262d;
+  }
+  .contact-item:last-child { border-bottom: none; }
+  .contact-item .ct-label { color: #8b949e; }
+  .contact-item .ct-value { color: #c9d1d9; }
+
 
 </style>
 <script>
@@ -222,10 +309,16 @@ var _hmt = _hmt || [];
       <div class="input-group">
         <label for="inputX">已抽抽数（距离上次出六星）</label>
         <input type="number" id="inputX" min="0" value="0" placeholder="0~99">
+               <input type="range" id="sliderX" min="0" max="99" value="0">
+        <div class="slider-value" id="sliderXVal">0 抽</div>
+
       </div>
       <div class="input-group">
         <label for="inputY">剩余抽数</label>
         <input type="number" id="inputY" min="1" value="50" placeholder="≥1">
+               <input type="range" id="sliderY" min="1" max="300" value="50">
+        <div class="slider-value" id="sliderYVal">50 抽</div>
+
       </div>
       <button class="calc-btn" onclick="calculate()">计算</button>
     </div>
@@ -264,6 +357,16 @@ var _hmt = _hmt || [];
       <img src="网站用文件.jpg" alt="谢谢喵~">
     </div>
   </div>
+ <!-- 右下角联系方式悬浮卡 -->
+<div class="contact-widget">
+  <div class="contact-panel" id="contactPanel">
+    <h4>联系站主</h4>
+    <div class="contact-item"><span class="ct-label">抖音</span><span class="ct-value">44837198644</span></div>
+    <div class="contact-item"><span class="ct-label">邮箱</span><span class="ct-value">elon_cheng0831@qq.com</span></div>
+  </div>
+  <button class="contact-toggle" onclick="toggleContact()">联系<br>我</button>
+</div>
+
 
 </div>
 
@@ -689,11 +792,48 @@ function calculate() {
   chartsArea.appendChild(rightCard);
   drawStarCountChart(rightCanvas, multiProb, 8);
 }
+// ========== 滑块双向绑定 ==========
+const inputX = document.getElementById('inputX');
+const inputY = document.getElementById('inputY');
+const sliderX = document.getElementById('sliderX');
+const sliderY = document.getElementById('sliderY');
+const sliderXVal = document.getElementById('sliderXVal');
+const sliderYVal = document.getElementById('sliderYVal');
+
+sliderX.addEventListener('input', function() {
+  inputX.value = this.value;
+  sliderXVal.textContent = this.value + ' 抽';
+  calculate();
+});
+inputX.addEventListener('input', function() {
+  let v = Math.max(0, Math.min(99, parseInt(this.value) || 0));
+  this.value = v;
+  sliderX.value = v;
+  sliderXVal.textContent = v + ' 抽';
+});
+
+sliderY.addEventListener('input', function() {
+  inputY.value = this.value;
+  sliderYVal.textContent = this.value + ' 抽';
+  calculate();
+});
+inputY.addEventListener('input', function() {
+  let v = Math.max(1, Math.min(300, parseInt(this.value) || 1));
+  this.value = v;
+  sliderY.value = v;
+  sliderYVal.textContent = v + ' 抽';
+});
+
+// 联系方式悬浮卡开关
+function toggleContact() {
+  document.getElementById('contactPanel').classList.toggle('active');
+}
 
 // 回车触发计算
 document.getElementById('inputY').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') calculate();
 });
+ 
 document.getElementById('inputX').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') calculate();
 });
