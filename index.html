@@ -7,372 +7,535 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: #0d1117;
-    color: #c9d1d9;
+    background: #070b14;
+    color: #e6edf3;
     font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     min-height: 100vh;
-    padding: 16px;
+    padding: clamp(10px, 2vw, 24px) clamp(6px, 1.5vw, 16px);
+    position: relative;
+    overflow-x: hidden;
   }
-  .container { max-width: 1200px; margin: 0 auto; }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 500px;
+    background: radial-gradient(ellipse, rgba(0,180,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -150px; right: -100px;
+    width: 500px; height: 400px;
+    background: radial-gradient(ellipse, rgba(240,136,62,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
   h1 {
-    font-size: 22px;
-    font-weight: 700;
-    color: #58a6ff;
+    font-size: clamp(20px, 3.5vw, 36px);
+    font-weight: 800;
     text-align: center;
-    margin-bottom: 6px;
-    letter-spacing: 1px;
+    margin-bottom: clamp(14px, 2.5vw, 32px);
+    letter-spacing: clamp(1px, 0.3vw, 3px);
+    background: linear-gradient(135deg, #00d4ff 0%, #58a6ff 50%, #a371f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(0,180,255,0.3));
+    animation: titleGlow 3s ease-in-out infinite alternate;
   }
-  .subtitle {
-    text-align: center;
-    font-size: 12px;
-    color: #8b949e;
-    margin-bottom: 20px;
+  @keyframes titleGlow {
+    from { filter: drop-shadow(0 0 15px rgba(0,180,255,0.25)); }
+    to { filter: drop-shadow(0 0 30px rgba(0,180,255,0.45)); }
+  }
+  .glass {
+    background: rgba(18, 24, 38, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(88, 166, 255, 0.15);
+    border-radius: clamp(8px, 1.2vw, 16px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
   }
   .input-card {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 10px;
-    padding: 18px;
-    margin-bottom: 16px;
+    padding: clamp(14px, 2vw, 28px);
+    margin-bottom: clamp(12px, 1.8vw, 22px);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .input-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,180,255,0.1);
+    border-color: rgba(88, 166, 255, 0.3);
   }
   .input-row {
     display: flex;
-    gap: 14px;
+    gap: clamp(10px, 1.5vw, 24px);
     flex-wrap: wrap;
     align-items: flex-end;
   }
-  .input-group { flex: 1; min-width: 140px; }
+  .input-group {
+    flex: 1;
+    min-width: clamp(120px, 20vw, 220px);
+  }
   .input-group label {
     display: block;
-    font-size: 13px;
+    font-size: clamp(12px, 1.5vw, 15px);
     color: #8b949e;
-    margin-bottom: 6px;
+    margin-bottom: clamp(5px, 0.8vw, 10px);
+    font-weight: 500;
   }
-  .input-group input {
+  .input-group input[type="number"] {
     width: 100%;
-    padding: 10px 12px;
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    color: #c9d1d9;
-    font-size: 16px;
+    padding: clamp(9px, 1.2vw, 14px) clamp(10px, 1.2vw, 16px);
+    background: rgba(7, 11, 20, 0.8);
+    border: 1px solid rgba(88, 166, 255, 0.2);
+    border-radius: clamp(6px, 0.8vw, 10px);
+    color: #e6edf3;
+    font-size: clamp(14px, 1.8vw, 18px);
+    font-weight: 600;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.25s;
   }
-  .input-group input:focus { border-color: #58a6ff; }
-   /* 滑块样式 */
+  .input-group input[type="number"]:focus {
+    border-color: #00d4ff;
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.15), 0 0 20px rgba(0,212,255,0.2);
+  }
   .input-group input[type="range"] {
     width: 100%;
-    margin-top: 8px;
+    margin-top: clamp(8px, 1vw, 14px);
     -webkit-appearance: none;
-    appearance: none;
-    height: 6px;
-    background: #30363d;
+    height: clamp(5px, 0.7vw, 8px);
+    background: linear-gradient(90deg, rgba(0,212,255,0.3), rgba(88,166,255,0.15));
     border-radius: 3px;
     outline: none;
     cursor: pointer;
   }
   .input-group input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: #58a6ff;
+    width: clamp(16px, 2vw, 24px);
+    height: clamp(16px, 2vw, 24px);
+    background: linear-gradient(135deg, #00d4ff, #58a6ff);
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 0 12px rgba(0,212,255,0.5);
   }
   .input-group input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    background: #58a6ff;
+    width: clamp(16px, 2vw, 24px);
+    height: clamp(16px, 2vw, 24px);
+    background: linear-gradient(135deg, #00d4ff, #58a6ff);
     border-radius: 50%;
     cursor: pointer;
     border: none;
   }
   .slider-value {
-    font-size: 11px;
-    color: #58a6ff;
+    font-size: clamp(10px, 1.3vw, 13px);
+    color: #00d4ff;
     text-align: right;
-    margin-top: 2px;
+    margin-top: clamp(2px, 0.5vw, 5px);
+    font-weight: 600;
   }
-
   .calc-btn {
-    padding: 10px 28px;
-    background: #238636;
+    padding: clamp(10px, 1.3vw, 15px) clamp(24px, 3vw, 40px);
+    background: linear-gradient(135deg, #238636, #2ea043);
     color: #fff;
     border: none;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: clamp(6px, 0.8vw, 10px);
+    font-size: clamp(13px, 1.6vw, 17px);
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
-    min-width: 100px;
+    transition: all 0.25s;
+    min-width: clamp(90px, 12vw, 130px);
+    letter-spacing: 1px;
+    box-shadow: 0 4px 16px rgba(46,160,67,0.3);
+    white-space: nowrap;
   }
-  .calc-btn:hover { background: #2ea043; }
-  .calc-btn:active { background: #238636; }
+  .calc-btn:hover {
+    background: linear-gradient(135deg, #2ea043, #3fb950);
+    box-shadow: 0 6px 24px rgba(46,160,67,0.45);
+    transform: translateY(-2px);
+  }
+  .calc-btn:active { transform: translateY(0) scale(0.97); }
   .prob-display {
     display: flex;
-    gap: 14px;
+    gap: clamp(10px, 1.5vw, 20px);
     flex-wrap: wrap;
-    margin-bottom: 16px;
+    margin-bottom: clamp(12px, 1.8vw, 22px);
   }
   .prob-box {
     flex: 1;
-    min-width: 160px;
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 10px;
-    padding: 14px 18px;
+    min-width: clamp(130px, 22vw, 200px);
+    padding: clamp(12px, 1.8vw, 22px);
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .prob-box:hover {
+    transform: translateY(-2px);
+    border-color: rgba(88, 166, 255, 0.35);
   }
   .prob-box .label {
-    font-size: 12px;
-    color: #8b949e;
-    margin-bottom: 4px;
+    font-size: clamp(10px, 1.3vw, 13px);
+    color: #6e7681;
+    margin-bottom: clamp(4px, 0.6vw, 8px);
   }
   .prob-box .value {
-    font-size: 24px;
-    font-weight: 700;
-    color: #58a6ff;
+    font-size: clamp(20px, 3vw, 34px);
+    font-weight: 800;
+    background: linear-gradient(135deg, #00d4ff, #58a6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-  .prob-box .value.warn { color: #f0883e; }
-  .prob-box .value.good { color: #3fb950; }
+  .prob-box .value.warn {
+    background: linear-gradient(135deg, #f0883e, #ffa657);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .prob-box .value.good {
+    background: linear-gradient(135deg, #3fb950, #56d364);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
   .charts {
     display: flex;
-    gap: 16px;
+    gap: clamp(10px, 1.5vw, 22px);
     flex-wrap: wrap;
   }
   .chart-card {
     flex: 1;
-    min-width: 300px;
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 10px;
-    padding: 14px;
+    min-width: clamp(280px, 45vw, 500px);
+    padding: clamp(12px, 1.8vw, 22px);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .chart-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(0,180,255,0.12);
+    border-color: rgba(88, 166, 255, 0.3);
   }
   .chart-card h3 {
-    font-size: 14px;
+    font-size: clamp(13px, 1.6vw, 17px);
     color: #c9d1d9;
-    margin-bottom: 10px;
+    margin-bottom: clamp(8px, 1.2vw, 16px);
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
   }
   .chart-card canvas {
-    width: 100%;
-    height: auto;
+    width: 100% !important;
+    height: auto !important;
     display: block;
+    aspect-ratio: 520 / 380;
   }
   .empty-hint {
     text-align: center;
     color: #484f58;
-    font-size: 14px;
-    padding: 40px 0;
+    font-size: clamp(13px, 1.6vw, 16px);
+    padding: clamp(30px, 6vw, 70px) 0;
+    width: 100%;
   }
   .footer {
     text-align: center;
-    font-size: 11px;
+    font-size: clamp(10px, 1.2vw, 13px);
     color: #484f58;
-    margin-top: 20px;
-    line-height: 1.6;
+    margin-top: clamp(18px, 3vw, 36px);
+    line-height: 1.8;
   }
-  @media (max-width: 640px) {
-    h1 { font-size: 18px; }
-    .input-row { flex-direction: column; }
-    .calc-btn { width: 100%; }
-    .prob-box .value { font-size: 20px; }
-    .chart-card { min-width: 100%; }
-  }
-  /* 弹窗按钮 */
   .popup-btn {
     display: block;
-    margin: 16px auto 0;
-    padding: 10px 28px;
-    background: #1f6feb;
+    margin: clamp(14px, 2vw, 24px) auto 0;
+    padding: clamp(9px, 1.2vw, 13px) clamp(24px, 3vw, 36px);
+    background: linear-gradient(135deg, #1f6feb, #388bfd);
     color: #fff;
     border: none;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: clamp(6px, 0.8vw, 10px);
+    font-size: clamp(12px, 1.5vw, 15px);
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(56,139,253,0.3);
   }
-  .popup-btn:hover { background: #388bfd; }
-
-  /* 弹窗遮罩 */
+  .popup-btn:hover {
+    background: linear-gradient(135deg, #388bfd, #58a6ff);
+    box-shadow: 0 6px 24px rgba(56,139,253,0.45);
+    transform: translateY(-2px);
+  }
   .modal-overlay {
     display: none;
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0,0,0,0.75);
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(4px);
     z-index: 999;
     justify-content: center;
     align-items: center;
+    padding: 20px;
   }
   .modal-overlay.active { display: flex; }
-
-  /* 弹窗内容 */
   .modal-content {
     position: relative;
-    max-width: 90%;
+    max-width: 95%;
     max-height: 90%;
+    animation: modalIn 0.3s ease-out;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
   }
   .modal-content img {
     max-width: 100%;
-    max-height: 85vh;
-    border-radius: 8px;
+    max-height: 82vh;
+    border-radius: 12px;
     display: block;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
   .modal-close {
     position: absolute;
-    top: -14px; right: -14px;
-    width: 36px; height: 36px;
-    background: #f85149;
+    top: -16px; right: -16px;
+    width: clamp(34px, 4vw, 44px);
+    height: clamp(34px, 4vw, 44px);
+    background: linear-gradient(135deg, #f85149, #da3633);
     color: #fff;
     border: none;
     border-radius: 50%;
-    font-size: 20px;
+    font-size: clamp(18px, 2.2vw, 24px);
     cursor: pointer;
     line-height: 1;
+    box-shadow: 0 4px 16px rgba(248,81,73,0.4);
   }
-  .modal-close:hover { background: #da3633; }
-   /* 右下角联系方式悬浮卡 */
   .contact-widget {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: clamp(12px, 2vw, 28px);
+    right: clamp(12px, 2vw, 28px);
     z-index: 500;
   }
   .contact-toggle {
-    width: 52px;
-    height: 52px;
+    width: clamp(48px, 6vw, 64px);
+    height: clamp(48px, 6vw, 64px);
     border-radius: 50%;
-    background: #238636;
+    background: linear-gradient(135deg, #238636, #2ea043);
     color: #fff;
     border: none;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: clamp(11px, 1.3vw, 14px);
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    box-shadow: 0 6px 24px rgba(46,160,67,0.4);
+    transition: all 0.3s;
     line-height: 1.2;
   }
-  .contact-toggle:hover { background: #2ea043; }
+  .contact-toggle:hover { transform: scale(1.08); }
   .contact-panel {
     display: none;
     position: absolute;
-    bottom: 62px;
+    bottom: calc(clamp(48px, 6vw, 64px) + 12px);
     right: 0;
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 10px;
-    padding: 16px;
-    min-width: 200px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    padding: clamp(14px, 2vw, 20px);
+    min-width: clamp(180px, 25vw, 240px);
+    animation: panelIn 0.25s ease-out;
+  }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .contact-panel.active { display: block; }
   .contact-panel h4 {
-    font-size: 13px;
-    color: #58a6ff;
-    margin-bottom: 10px;
+    font-size: clamp(13px, 1.5vw, 16px);
+    background: linear-gradient(135deg, #00d4ff, #58a6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: clamp(8px, 1.2vw, 14px);
     text-align: center;
+    font-weight: 700;
   }
   .contact-item {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
-    padding: 5px 0;
-    border-bottom: 1px solid #21262d;
+    font-size: clamp(11px, 1.3vw, 14px);
+    padding: clamp(5px, 0.8vw, 9px) 0;
+    border-bottom: 1px solid rgba(88,166,255,0.1);
   }
   .contact-item:last-child { border-bottom: none; }
-  .contact-item .ct-label { color: #8b949e; }
-  .contact-item .ct-value { color: #c9d1d9; }
+  .contact-item .ct-label { color: #6e7681; }
+  .contact-item .ct-value { color: #c9d1d9; font-weight: 500; }
 
-
+  /* ===== 固定滑块条：改明显版 ===== */
+  .sticky-slider {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(15, 25, 45, 0.98) 0%, rgba(10, 18, 35, 0.98) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 2px solid #00d4ff;
+    padding: clamp(8px, 1.2vw, 14px) clamp(12px, 2vw, 20px);
+    z-index: 400;
+    gap: clamp(12px, 2vw, 24px);
+    align-items: center;
+    box-shadow: 0 4px 24px rgba(0, 212, 255, 0.25), 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .sticky-slider.active { display: flex; }
+  .sticky-item { flex: 1; min-width: 0; }
+  .sticky-label {
+    font-size: clamp(11px, 1.4vw, 14px);
+    color: #c9d1d9;
+    display: block;
+    margin-bottom: clamp(3px, 0.5vw, 6px);
+    font-weight: 600;
+  }
+  .sticky-label b {
+    color: #00d4ff;
+    font-weight: 800;
+    font-size: clamp(13px, 1.6vw, 16px);
+    text-shadow: 0 0 8px rgba(0,212,255,0.5);
+  }
+  .sticky-slider input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: clamp(5px, 0.7vw, 8px);
+    background: linear-gradient(90deg, rgba(0,212,255,0.5), rgba(88,166,255,0.25));
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+  }
+  .sticky-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: clamp(18px, 2.4vw, 26px);
+    height: clamp(18px, 2.4vw, 26px);
+    background: linear-gradient(135deg, #00d4ff, #0099cc);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(0,212,255,0.8), 0 0 4px rgba(255,255,255,0.5);
+    border: 2px solid #fff;
+  }
+  .sticky-slider input[type="range"]::-moz-range-thumb {
+    width: clamp(18px, 2.4vw, 26px);
+    height: clamp(18px, 2.4vw, 26px);
+    background: linear-gradient(135deg, #00d4ff, #0099cc);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 12px rgba(0,212,255,0.8);
+  }
+  @media (min-width: 769px) {
+    .sticky-slider { display: none !important; }
+  }
+  @media (max-width: 480px) {
+    .input-row { flex-direction: column; align-items: stretch; }
+    .calc-btn { width: 100%; }
+    .input-group { min-width: 100%; }
+    .prob-box { min-width: calc(50% - 8px); }
+  }
+  @media (min-width: 481px) and (max-width: 768px) {
+    .input-group { min-width: calc(50% - 12px); }
+    .calc-btn { flex: 1; min-width: 100%; }
+    .prob-box { min-width: calc(33.33% - 12px); }
+    .chart-card { min-width: 100%; }
+  }
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .input-group { min-width: calc(33.33% - 16px); }
+    .prob-box { min-width: calc(33.33% - 14px); }
+    .chart-card { min-width: calc(50% - 12px); }
+  }
+  @media (min-width: 1025px) and (max-width: 1440px) {
+    .chart-card { min-width: calc(50% - 14px); }
+  }
+  @media (min-width: 1441px) {
+    .container { max-width: 1400px; }
+    .chart-card { min-width: calc(50% - 14px); }
+  }
+  .container > * {
+    animation: fadeInUp 0.6s ease-out both;
+  }
+  .container > *:nth-child(1) { animation-delay: 0.05s; }
+  .container > *:nth-child(2) { animation-delay: 0.1s; }
+  .container > *:nth-child(3) { animation-delay: 0.15s; }
+  .container > *:nth-child(4) { animation-delay: 0.2s; }
+  .container > *:nth-child(5) { animation-delay: 0.25s; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
-<script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?68c0e27061440dbc5b539350e65f53f8";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
-
 </head>
 <body>
 <div class="container">
   <h1>明日方舟六星出货概率计算器</h1>
-  <p class="subtitle">基础概率2% · 50抽后每抽+2%保底 · 支持多次六星概率计算</p>
-
-  <div class="input-card">
+  <div class="input-card glass">
     <div class="input-row">
       <div class="input-group">
         <label for="inputX">已抽抽数（距离上次出六星）</label>
-        <input type="number" id="inputX" min="0" value="0" placeholder="0~99">
-               <input type="range" id="sliderX" min="0" max="99" value="0">
+        <input type="number" id="inputX" min="0" max="99" value="0" placeholder="0~99">
+        <input type="range" id="sliderX" min="0" max="99" value="0">
         <div class="slider-value" id="sliderXVal">0 抽</div>
-
       </div>
       <div class="input-group">
         <label for="inputY">剩余抽数</label>
-        <input type="number" id="inputY" min="1" value="50" placeholder="≥1">
-               <input type="range" id="sliderY" min="1" max="300" value="50">
+        <input type="number" id="inputY" min="1" max="300" value="50" placeholder="≥1">
+        <input type="range" id="sliderY" min="1" max="300" value="50">
         <div class="slider-value" id="sliderYVal">50 抽</div>
-
       </div>
       <button class="calc-btn" onclick="calculate()">计算</button>
     </div>
   </div>
-
+  <div class="sticky-slider" id="stickySlider">
+    <div class="sticky-item">
+      <span class="sticky-label">已抽: <b id="stickyXVal">0</b></span>
+      <input type="range" id="stickySliderX" min="0" max="99" value="0">
+    </div>
+    <div class="sticky-item">
+      <span class="sticky-label">剩余: <b id="stickyYVal">50</b></span>
+      <input type="range" id="stickySliderY" min="1" max="300" value="50">
+    </div>
+  </div>
   <div class="prob-display" id="probDisplay" style="display:none;">
-    <div class="prob-box">
+    <div class="prob-box glass">
       <div class="label">总抽数</div>
       <div class="value" id="totalPulls">--</div>
     </div>
-    <div class="prob-box">
-      <div class="label">这段抽卡出六星总概率</div>
+    <div class="prob-box glass">
+      <div class="label">这段出六星总概率</div>
       <div class="value" id="totalProb">--</div>
     </div>
-    <div class="prob-box" id="remainBox" style="display:none;">
+    <div class="prob-box glass" id="remainBox" style="display:none;">
       <div class="label">剩余抽数条件概率</div>
       <div class="value warn" id="remainProb">--</div>
     </div>
   </div>
-
   <div class="charts" id="chartsArea">
     <div class="empty-hint">输入抽数后点击「计算」查看概率分布图</div>
   </div>
-
   <div class="footer">
     概率基于数学模型精确计算（卷积法），非随机仿真<br>
     总抽数≤99时显示首个六星出货分布，总抽数&gt;99时显示六星个数饼图
   </div>
-  <!-- 弹窗按钮 -->
   <button class="popup-btn" onclick="openModal()">给站主捐点钱</button>
-
-  <!-- 弹窗 -->
   <div class="modal-overlay" id="imageModal" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeModal()">&times;</button>
-      <img src="网站用文件.jpg" alt="谢谢喵~">
+      <img src="_cgi-bin_mmwebwx-bin_webwxgetmsgimg__&MsgID=2756647966809523533&skey=@crypt_78e37c6d_0893c8a499f732eaa2394b0df8cb9eb6&mmweb_appid=wx_webfilehelper.jpg" alt="谢谢喵~">
     </div>
   </div>
- <!-- 右下角联系方式悬浮卡 -->
+</div>
 <div class="contact-widget">
-  <div class="contact-panel" id="contactPanel">
+  <div class="contact-panel glass" id="contactPanel">
     <h4>联系站主</h4>
-    <div class="contact-item"><span class="ct-label">抖音</span><span class="ct-value">44837198644</span></div>
-    <div class="contact-item"><span class="ct-label">邮箱</span><span class="ct-value">elon_cheng0831@qq.com</span></div>
+    <div class="contact-item"><span class="ct-label">QQ</span><span class="ct-value">123456789</span></div>
+    <div class="contact-item"><span class="ct-label">邮箱</span><span class="ct-value">xxx@qq.com</span></div>
+    <div class="contact-item"><span class="ct-label">B站</span><span class="ct-value">UID:123456</span></div>
   </div>
   <button class="contact-toggle" onclick="toggleContact()">联系<br>我</button>
 </div>
-
-
-</div>
-
 <script>
-// ========== 概率计算核心逻辑 ==========
-
 function arknightsCdf(N) {
   let survive = 1.0;
   for (let m = 1; m <= N; m++) {
@@ -381,7 +544,6 @@ function arknightsCdf(N) {
   }
   return 1.0 - survive;
 }
-
 function getOnePmf() {
   let pmf = new Array(99).fill(0);
   let sPrev = 1.0;
@@ -393,7 +555,6 @@ function getOnePmf() {
   }
   return pmf;
 }
-
 function discreteConvolve(a, b) {
   let res = new Array(a.length + b.length - 1).fill(0);
   for (let i = 0; i < a.length; i++) {
@@ -404,7 +565,6 @@ function discreteConvolve(a, b) {
   }
   return res;
 }
-
 function pmfKStars(basePmf, k) {
   if (k === 1) return basePmf.slice();
   let conv = basePmf.slice();
@@ -413,7 +573,6 @@ function pmfKStars(basePmf, k) {
   }
   return conv;
 }
-
 function calcKProb(basePmf, nTotal, maxK) {
   maxK = maxK || 8;
   let probDict = {};
@@ -429,33 +588,22 @@ function calcKProb(basePmf, nTotal, maxK) {
   }
   return probDict;
 }
-
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-
-// ========== Canvas 绘图 ==========
-
 function setupCanvas(canvas, w, h) {
   const dpr = window.devicePixelRatio || 1;
   canvas.width = w * dpr;
   canvas.height = h * dpr;
-  canvas.style.width = w + 'px';
-  canvas.style.height = h + 'px';
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
   return ctx;
 }
-
-// 左边：首个六星出货分布柱状图
 function drawFirstStarChart(canvas, targetPull) {
   const W = 520, H = 380;
   const ctx = setupCanvas(canvas, W, H);
   ctx.clearRect(0, 0, W, H);
-
   const padL = 50, padR = 20, padT = 30, padB = 50;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
-
-  // 坐标轴
   ctx.strokeStyle = '#30363d';
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -463,8 +611,6 @@ function drawFirstStarChart(canvas, targetPull) {
   ctx.lineTo(padL, padT + chartH);
   ctx.lineTo(padL + chartW, padT + chartH);
   ctx.stroke();
-
-  // X轴刻度
   ctx.fillStyle = '#8b949e';
   ctx.font = '11px sans-serif';
   ctx.textAlign = 'center';
@@ -478,16 +624,12 @@ function drawFirstStarChart(canvas, targetPull) {
     ctx.stroke();
   }
   ctx.fillText('首个六星出货抽数', padL + chartW / 2, padT + chartH + 38);
-
-  // Y轴标签
   ctx.save();
   ctx.translate(14, padT + chartH / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillText('相对概率', 0, 0);
   ctx.restore();
-
-  // 参考线
-  function drawRefLine(pull, color, label) {
+  function drawRefLine(pull, color) {
     let x = padL + (pull / 100) * chartW;
     ctx.strokeStyle = color;
     ctx.setLineDash([4, 3]);
@@ -498,11 +640,9 @@ function drawFirstStarChart(canvas, targetPull) {
     ctx.stroke();
     ctx.setLineDash([]);
   }
-  drawRefLine(34.59, '#f85149', '期望');
-  drawRefLine(35, '#3fb950', '中位');
-  drawRefLine(50, '#a371f7', '保底');
-
-  // 柱子
+  drawRefLine(34.59, '#f85149');
+  drawRefLine(35, '#3fb950');
+  drawRefLine(50, '#a371f7');
   const barW = chartW / 100 * 0.7;
   for (let pull = 1; pull <= 100; pull++) {
     let h;
@@ -520,33 +660,24 @@ function drawFirstStarChart(canvas, targetPull) {
     ctx.fillStyle = isHL ? '#f0e130' : (pull <= 50 ? '#388bfd' : '#f0883e');
     ctx.fillRect(x, y, barW, h);
   }
-
-  // 标题
   ctx.fillStyle = '#c9d1d9';
   ctx.font = 'bold 13px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('首个六星出货抽数分布', W / 2, 18);
 }
-
-// 右边：六星个数概率柱状图
 function drawStarCountChart(canvas, probDict, maxK) {
   maxK = maxK || 8;
   const W = 520, H = 380;
   const ctx = setupCanvas(canvas, W, H);
   ctx.clearRect(0, 0, W, H);
-
   const padL = 50, padR = 20, padT = 30, padB = 50;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
-
-  // 计算恰好k个概率
   let exact = [];
   for (let k = 0; k <= maxK; k++) {
     if (k < maxK) exact.push(Math.max(0, probDict[k] - probDict[k + 1]));
     else exact.push(Math.max(0, probDict[k]));
   }
-
-  // 坐标轴
   ctx.strokeStyle = '#30363d';
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -554,8 +685,6 @@ function drawStarCountChart(canvas, probDict, maxK) {
   ctx.lineTo(padL, padT + chartH);
   ctx.lineTo(padL + chartW, padT + chartH);
   ctx.stroke();
-
-  // Y轴刻度
   ctx.fillStyle = '#8b949e';
   ctx.font = '11px sans-serif';
   ctx.textAlign = 'right';
@@ -570,8 +699,6 @@ function drawStarCountChart(canvas, probDict, maxK) {
     ctx.lineTo(padL + chartW, y);
     ctx.stroke();
   }
-
-  // 柱子
   let n = exact.length;
   let gap = 8;
   let barW = (chartW - gap * (n - 1)) / n;
@@ -584,12 +711,10 @@ function drawStarCountChart(canvas, probDict, maxK) {
     let y = padT + chartH - h;
     ctx.fillStyle = colors[k % colors.length];
     ctx.fillRect(x, y, barW, h);
-    // X标签
     ctx.fillStyle = '#8b949e';
     ctx.font = '11px sans-serif';
     let label = k < maxK ? k : (maxK + '+');
     ctx.fillText(label, x + barW / 2, padT + chartH + 18);
-    // 柱子上方百分比
     if (exact[k] > maxP * 0.04) {
       ctx.fillStyle = '#c9d1d9';
       ctx.font = '10px sans-serif';
@@ -599,40 +724,29 @@ function drawStarCountChart(canvas, probDict, maxK) {
   ctx.fillStyle = '#8b949e';
   ctx.font = '11px sans-serif';
   ctx.fillText('六星个数', padL + chartW / 2, padT + chartH + 38);
-
-  // Y轴标签
   ctx.save();
   ctx.translate(14, padT + chartH / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillStyle = '#8b949e';
   ctx.fillText('概率(%)', 0, 0);
   ctx.restore();
-
-  // 标题
   ctx.fillStyle = '#c9d1d9';
   ctx.font = 'bold 13px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('六星个数概率分布', W / 2, 18);
 }
-
-// 饼图
 function drawPieChart(canvas, probDict, maxK) {
   maxK = maxK || 8;
   const W = 520, H = 380;
   const ctx = setupCanvas(canvas, W, H);
   ctx.clearRect(0, 0, W, H);
-
-  // 计算恰好k个概率
   let exact = [];
   for (let k = 0; k <= maxK; k++) {
     if (k < maxK) exact.push(Math.max(0, probDict[k] - probDict[k + 1]));
     else exact.push(Math.max(0, probDict[k]));
   }
-
   let colors = ['#f85149','#388bfd','#3fb950','#f0883e','#a371f7','#1f9eb0','#db6d28','#30363d','#6e7681'];
   let cx = 170, cy = H / 2 + 10, r = 120;
-
-  // 画扇形
   let startAngle = -Math.PI / 2;
   for (let k = 0; k <= maxK; k++) {
     if (exact[k] < 0.001) continue;
@@ -643,10 +757,9 @@ function drawPieChart(canvas, probDict, maxK) {
     ctx.closePath();
     ctx.fillStyle = colors[k % colors.length];
     ctx.fill();
-    ctx.strokeStyle = '#0d1117';
+    ctx.strokeStyle = '#070b14';
     ctx.lineWidth = 2;
     ctx.stroke();
-    // 扇形内标注
     if (exact[k] > 0.03) {
       let mid = startAngle + extent / 2;
       let tx = cx + Math.cos(mid) * r * 0.62;
@@ -658,23 +771,17 @@ function drawPieChart(canvas, probDict, maxK) {
     }
     startAngle += extent;
   }
-
-  // 图例
   let legendX = 330, legendY = 50;
   ctx.font = '12px sans-serif';
   ctx.textAlign = 'left';
   for (let k = 0; k <= maxK; k++) {
     let ly = legendY + k * 22;
-    // 颜色方块
     ctx.fillStyle = colors[k % colors.length];
     ctx.fillRect(legendX, ly, 14, 14);
-    // 文字
     ctx.fillStyle = '#c9d1d9';
     let label = k < maxK ? (k + '个六星') : (maxK + '个及以上');
     ctx.fillText(label + ': ' + (exact[k] * 100).toFixed(2) + '%', legendX + 20, ly + 11);
   }
-
-  // 标题
   ctx.fillStyle = '#c9d1d9';
   ctx.font = 'bold 13px sans-serif';
   ctx.textAlign = 'center';
@@ -683,176 +790,133 @@ function drawPieChart(canvas, probDict, maxK) {
   ctx.font = '11px sans-serif';
   ctx.fillText('0~7为恰好个数，8为8个及以上', W / 2, 34);
 }
-
-// ========== 主计算逻辑 ==========
-
 let basePmf = null;
-
 function calculate() {
   let xVal = parseInt(document.getElementById('inputX').value);
   let yVal = parseInt(document.getElementById('inputY').value);
-
   if (isNaN(xVal) || isNaN(yVal) || xVal < 0 || yVal < 1) {
     alert('请输入有效的抽数（已抽数≥0，剩余抽数≥1）');
     return;
   }
-
   let z = xVal + yVal;
   let gailv = 0, gailvl = 0;
-
-  // 计算单段概率
   if (xVal === 0) {
     let d;
     if (yVal > 50) {
       let b = 1, c = 0.98;
-      for (let i = 1; i <= yVal - 50; i++) {
-        c = Math.max(c - 0.02, 0);
-        b *= c;
-      }
+      for (let i = 1; i <= yVal - 50; i++) { c = Math.max(c - 0.02, 0); b *= c; }
       d = Math.pow(0.98, 50) * b;
-    } else if (yVal < 50) {
-      d = Math.pow(0.98, yVal);
-    } else {
-      d = Math.pow(0.98, 50);
-    }
+    } else if (yVal < 50) { d = Math.pow(0.98, yVal); }
+    else { d = Math.pow(0.98, 50); }
     gailv = clamp((1 - d) * 100, 0, 100);
   } else {
-    // 总概率 d（前z抽全不出）
     let d;
     if (z > 50) {
       let b1 = 1, c1 = 0.98;
-      for (let i = 1; i <= z - 50; i++) {
-        c1 = Math.max(c1 - 0.02, 0);
-        b1 *= c1;
-      }
+      for (let i = 1; i <= z - 50; i++) { c1 = Math.max(c1 - 0.02, 0); b1 *= c1; }
       d = Math.pow(0.98, 50) * b1;
-    } else if (z < 50) {
-      d = Math.pow(0.98, z);
-    } else {
-      d = Math.pow(0.98, 50);
-    }
-    // f（前x抽全不出）
+    } else if (z < 50) { d = Math.pow(0.98, z); }
+    else { d = Math.pow(0.98, 50); }
     let f;
     if (xVal > 50) {
       let b2 = 1, c2 = 0.98;
-      for (let i = 1; i <= xVal - 50; i++) {
-        c2 = Math.max(c2 - 0.02, 0);
-        b2 *= c2;
-      }
+      for (let i = 1; i <= xVal - 50; i++) { c2 = Math.max(c2 - 0.02, 0); b2 *= c2; }
       f = Math.pow(0.98, 50) * b2;
-    } else if (xVal < 50) {
-      f = Math.pow(0.98, xVal);
-    } else {
-      f = Math.pow(0.98, 50);
-    }
+    } else if (xVal < 50) { f = Math.pow(0.98, xVal); }
+    else { f = Math.pow(0.98, 50); }
     gailv = clamp((1 - d) * 100, 0, 100);
     gailvl = f > 0 ? clamp((f - d) / f * 100, 0, 100) : 0;
   }
-
-  // 卷积计算多次六星概率
   if (!basePmf) basePmf = getOnePmf();
   let multiProb = calcKProb(basePmf, z, 8);
-
-  // 显示概率
   document.getElementById('probDisplay').style.display = 'flex';
   document.getElementById('totalPulls').textContent = z + ' 抽';
   let tpEl = document.getElementById('totalProb');
   tpEl.textContent = gailv.toFixed(3) + '%';
   tpEl.className = 'value ' + (gailv >= 99 ? 'good' : (gailv >= 50 ? '' : 'warn'));
-
   if (xVal > 0) {
     document.getElementById('remainBox').style.display = 'block';
     document.getElementById('remainProb').textContent = gailvl.toFixed(3) + '%';
   } else {
     document.getElementById('remainBox').style.display = 'none';
   }
-
-  // 渲染图表
   let chartsArea = document.getElementById('chartsArea');
   chartsArea.innerHTML = '';
-
-  // 左边图表
   let leftCard = document.createElement('div');
-  leftCard.className = 'chart-card';
+  leftCard.className = 'chart-card glass';
   let leftCanvas = document.createElement('canvas');
   leftCard.appendChild(leftCanvas);
   chartsArea.appendChild(leftCard);
-
-  if (z <= 99) {
-    drawFirstStarChart(leftCanvas, xVal === 0 ? yVal : z);
-  } else {
-    drawPieChart(leftCanvas, multiProb, 8);
-  }
-
-  // 右边图表
+  if (z <= 99) { drawFirstStarChart(leftCanvas, xVal === 0 ? yVal : z); }
+  else { drawPieChart(leftCanvas, multiProb, 8); }
   let rightCard = document.createElement('div');
-  rightCard.className = 'chart-card';
+  rightCard.className = 'chart-card glass';
   let rightCanvas = document.createElement('canvas');
   rightCard.appendChild(rightCanvas);
   chartsArea.appendChild(rightCard);
   drawStarCountChart(rightCanvas, multiProb, 8);
 }
-// ========== 滑块双向绑定 ==========
 const inputX = document.getElementById('inputX');
 const inputY = document.getElementById('inputY');
 const sliderX = document.getElementById('sliderX');
 const sliderY = document.getElementById('sliderY');
 const sliderXVal = document.getElementById('sliderXVal');
 const sliderYVal = document.getElementById('sliderYVal');
-
 sliderX.addEventListener('input', function() {
-  inputX.value = this.value;
-  sliderXVal.textContent = this.value + ' 抽';
-  calculate();
+  inputX.value = this.value; sliderXVal.textContent = this.value + ' 抽'; calculate();
 });
 inputX.addEventListener('input', function() {
-  let v = Math.max(0, Math.min(99, parseInt(this.value) || 0));
-  this.value = v;
-  sliderX.value = v;
-  sliderXVal.textContent = v + ' 抽';
+  let v = clamp(parseInt(this.value) || 0, 0, 99);
+  this.value = v; sliderX.value = v; sliderXVal.textContent = v + ' 抽';
 });
-
 sliderY.addEventListener('input', function() {
-  inputY.value = this.value;
-  sliderYVal.textContent = this.value + ' 抽';
-  calculate();
+  inputY.value = this.value; sliderYVal.textContent = this.value + ' 抽'; calculate();
 });
 inputY.addEventListener('input', function() {
-  let v = Math.max(1, Math.min(300, parseInt(this.value) || 1));
-  this.value = v;
-  sliderY.value = v;
-  sliderYVal.textContent = v + ' 抽';
+  let v = clamp(parseInt(this.value) || 1, 1, 300);
+  this.value = v; sliderY.value = v; sliderYVal.textContent = v + ' 抽';
 });
-
-// 联系方式悬浮卡开关
-function toggleContact() {
-  document.getElementById('contactPanel').classList.toggle('active');
-}
-
-// 回车触发计算
-document.getElementById('inputY').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') calculate();
-});
- 
-document.getElementById('inputX').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') calculate();
-});
-// 弹窗控制
+document.getElementById('inputY').addEventListener('keydown', function(e) { if (e.key === 'Enter') calculate(); });
+document.getElementById('inputX').addEventListener('keydown', function(e) { if (e.key === 'Enter') calculate(); });
 function openModal() {
   document.getElementById('imageModal').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 function closeModal(e) {
-  // 如果是点击遮罩层才关闭，点击图片内容不关闭
   if (e && e.target !== e.currentTarget) return;
   document.getElementById('imageModal').classList.remove('active');
   document.body.style.overflow = '';
 }
-// 按ESC键关闭弹窗
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+function toggleContact() {
+  document.getElementById('contactPanel').classList.toggle('active');
+}
+const inputCard = document.querySelector('.input-card');
+const stickySlider = document.getElementById('stickySlider');
+const stickySliderX = document.getElementById('stickySliderX');
+const stickySliderY = document.getElementById('stickySliderY');
+const stickyXVal = document.getElementById('stickyXVal');
+const stickyYVal = document.getElementById('stickyYVal');
+window.addEventListener('scroll', function() {
+  let rect = inputCard.getBoundingClientRect();
+  if (rect.bottom < 0) {
+    stickySlider.classList.add('active');
+    stickySliderX.value = inputX.value;
+    stickySliderY.value = inputY.value;
+    stickyXVal.textContent = inputX.value;
+    stickyYVal.textContent = inputY.value;
+  } else {
+    stickySlider.classList.remove('active');
+  }
 });
-
+stickySliderX.addEventListener('input', function() {
+  inputX.value = this.value; sliderX.value = this.value;
+  sliderXVal.textContent = this.value + ' 抽'; stickyXVal.textContent = this.value; calculate();
+});
+stickySliderY.addEventListener('input', function() {
+  inputY.value = this.value; sliderY.value = this.value;
+  sliderYVal.textContent = this.value + ' 抽'; stickyYVal.textContent = this.value; calculate();
+});
 </script>
 </body>
 </html>
